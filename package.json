@@ -1,0 +1,39 @@
+{
+  "name": "vk-chat-moderation",
+  "private": true,
+  "version": "0.0.1",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./index.js",
+    "dev": "nodemon ./index.js",
+    "deploy:setup": "pm2 deploy production setup",
+    "deploy:prod": "pm2 deploy ecosystem.config.js production --force"
+  },
+  "keywords": [
+    "vk",
+    "bot",
+    "nodejs"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alaladdin/vk-chat-moderation.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Alaladdin/vk-chat-moderation.git/issues"
+  },
+  "author": "Alaladdin",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "vk-io": "^4.4.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.1",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.25.2",
+    "nodemon": "^2.0.13"
+  },
+  "engines": {
+    "node": ">=15.x"
+  }
+}
