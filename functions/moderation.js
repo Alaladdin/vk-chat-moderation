@@ -1,4 +1,4 @@
-const { mainChat } = require('../config');
+const { mainChat, adminId } = require('../config');
 
 module.exports = {
   name: 'moderation',
@@ -7,10 +7,10 @@ module.exports = {
       .then((users) => `${users[0].first_name} ${users[0].last_name}`)
       .catch(() => 'Не признал');
   },
-  async sendMessageToChat(message, ctx) {
+  async sendMessageToChat(message, peerId, ctx) {
     if (!message) return false;
 
-    return ctx.send({ message, attachment: ctx.attachments, peer_id: mainChat, dont_parse_links: true });
+    return ctx.send({ message, attachment: ctx.attachments, peer_id: peerId, dont_parse_links: true });
   },
   getDeleteOptions(ctx) {
     return {
@@ -19,10 +19,13 @@ module.exports = {
       delete_for_all          : 1,
     };
   },
+  isNotAllowedChat(chatId) {
+    return [mainChat].includes(chatId);
+  },
   async init(ctx, next, vk) {
-    const { text, senderId, attachments } = ctx;
+    const { peerId, text, senderId, attachments } = ctx;
 
-    if (!ctx.isUser || !ctx.isChat) return;
+    if (!ctx.isUser || !ctx.isChat || this.isNotAllowedChat(peerId)) return;
 
     const deleteOptions = this.getDeleteOptions(ctx);
 
@@ -40,7 +43,14 @@ module.exports = {
 
         return message.join('\n');
       })
-      .then((message) => this.sendMessageToChat(message, ctx))
-      .catch(console.error);
+      .then((message) => this.sendMessageToChat(message, mainChat, ctx))
+      .catch((error) => {
+        // code === 15 => cannot delete admin message
+        if (error.code !== 15) {
+          console.error(error);
+
+          this.sendMessageToChat(error, adminId, ctx);
+        }
+      });
   },
 };
